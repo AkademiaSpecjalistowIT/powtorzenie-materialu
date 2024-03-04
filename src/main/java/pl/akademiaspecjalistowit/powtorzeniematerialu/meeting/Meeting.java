@@ -4,8 +4,6 @@ import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
@@ -53,10 +51,10 @@ public class Meeting {
         return Duration.ofHours(hours).plus(Duration.ofMinutes(minutes));
     }
 
-    public void checkForParticipantsAlreadyScheduledMeetingsCollisions(List<Meeting> meetingsToCheck){
+    public void checkForParticipantsAlreadyScheduledMeetingsCollisions(List<Meeting> meetingsToCheck) {
         for (Meeting meetingByDate : meetingsToCheck) {
             for (String email : this.getParticipantEmail()) {
-                if (meetingByDate.getParticipantEmail().contains(email)) {
+                if (meetingByDate.getParticipantEmail().contains(email) && isColliding(meetingByDate)) {
                     throw new MeetingException(
                         String.format("Użytkownik %s ma już w tym czasie inne spotkanie", email));
                 }
@@ -64,12 +62,10 @@ public class Meeting {
         }
     }
 
-    public UUID getMeetingId() {
-        return meetingId;
-    }
-
-    public String getName() {
-        return name;
+    private boolean isColliding(Meeting otherMeeting) {
+        LocalDateTime thisMeetingEnd = this.dateAndTime.plus(this.meetingDuration);
+        LocalDateTime otherMeetingEnd = otherMeeting.getDateAndTime().plus(otherMeeting.getMeetingDuration());
+        return this.dateAndTime.isBefore(otherMeetingEnd) && thisMeetingEnd.isAfter(otherMeeting.getDateAndTime());
     }
 
     public LocalDateTime getDateAndTime() {

@@ -65,7 +65,7 @@ class MeetingServiceTest {
     }
 
     @Test
-    void making_overlapping_meetings_for_these_same_participants_is_possible() {
+    void making_overlapping_meetings_for_these_same_participants_is_not_possible() {
         // GIVEN
         String meetingName = "Test Meeting";
         String meetingDateTimeString = "01:01:2024 12:00";
@@ -91,7 +91,6 @@ class MeetingServiceTest {
         assertThrows(MeetingException.class, e);
         List<Meeting> allMeetings = meetingService.getAllMeetings();
         assertThat(allMeetings).hasSize(1);
-
     }
 
 
