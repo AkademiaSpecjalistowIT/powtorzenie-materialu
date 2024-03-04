@@ -83,5 +83,30 @@ class MeetingTest {
         // Then
         assertDoesNotThrow(action);
     }
+
+    @Test
+    void should_not_throw_exception_for_meetings_with_no_collisions_but_these_same_participants() {
+        // Given
+        Meeting existingMeeting = new Meeting(
+            "Existing Meeting",
+            "15:03:2023 09:00", // dd:MM:yyyy HH:mm
+            Set.of("participant1@example.com"),
+            "01:00"
+        );
+
+        Meeting newMeeting = new Meeting(
+            "New Meeting Not Overlapping",
+            "15:03:2023 11:30", // Does not overlap with existing meeting
+            Set.of("participant1@example.com"),
+            "03:00"
+        );
+
+        // When
+        Executable action = () ->
+            newMeeting.checkForParticipantsAlreadyScheduledMeetingsCollisions(List.of(existingMeeting));
+
+        // Then
+        assertDoesNotThrow(action);
+    }
 }
 

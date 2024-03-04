@@ -52,17 +52,23 @@ public class Meeting {
     }
 
     public void checkForParticipantsAlreadyScheduledMeetingsCollisions(List<Meeting> meetingsToCheck) {
-        for (Meeting meetingByDate : meetingsToCheck) {
-            for (String email : this.getParticipantEmail()) {
-                if (meetingByDate.getParticipantEmail().contains(email) && isColliding(meetingByDate)) {
-                    throw new MeetingException(
-                        String.format("Użytkownik %s ma już w tym czasie inne spotkanie", email));
-                }
+        for (Meeting meetingToCheck : meetingsToCheck) {
+            if (isTimelineColliding(meetingToCheck)) {
+                checkIfAnyParticipantsAlreadyOnThatMeeting(meetingToCheck);
             }
         }
     }
 
-    private boolean isColliding(Meeting otherMeeting) {
+    private void checkIfAnyParticipantsAlreadyOnThatMeeting(Meeting meetingByDate) {
+        for (String email : this.getParticipantEmail()) {
+            if (meetingByDate.getParticipantEmail().contains(email)) {
+                throw new MeetingException(
+                    String.format("Użytkownik %s ma już w tym czasie inne spotkanie", email));
+            }
+        }
+    }
+
+    private boolean isTimelineColliding(Meeting otherMeeting) {
         LocalDateTime thisMeetingEnd = this.dateAndTime.plus(this.meetingDuration);
         LocalDateTime otherMeetingEnd = otherMeeting.getDateAndTime().plus(otherMeeting.getMeetingDuration());
         return this.dateAndTime.isBefore(otherMeetingEnd) && thisMeetingEnd.isAfter(otherMeeting.getDateAndTime());
