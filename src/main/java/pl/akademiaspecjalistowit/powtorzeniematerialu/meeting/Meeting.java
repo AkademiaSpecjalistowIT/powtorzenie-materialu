@@ -4,6 +4,9 @@ import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
@@ -30,7 +33,7 @@ public class Meeting {
 
     }
 
-    private LocalDateTime parseStringToDate(String dateString) {
+    private static LocalDateTime parseStringToDate(String dateString) {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd:MM:yyyy HH:mm");
         try {
             return LocalDateTime.parse(dateString, formatter);
@@ -48,6 +51,37 @@ public class Meeting {
         long minutes = Long.parseLong(parts[1]);
 
         return Duration.ofHours(hours).plus(Duration.ofMinutes(minutes));
+    }
+
+    public void checkForParticipantsAlreadyScheduledMeetingsCollisions(List<Meeting> meetingsToCheck){
+        for (Meeting meetingByDate : meetingsToCheck) {
+            for (String email : this.getParticipantEmail()) {
+                if (meetingByDate.getParticipantEmail().contains(email)) {
+                    throw new MeetingException(
+                        String.format("Użytkownik %s ma już w tym czasie inne spotkanie", email));
+                }
+            }
+        }
+    }
+
+    public UUID getMeetingId() {
+        return meetingId;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public LocalDateTime getDateAndTime() {
+        return dateAndTime;
+    }
+
+    public Set<String> getParticipantEmail() {
+        return Set.copyOf(participantEmail);
+    }
+
+    public Duration getMeetingDuration() {
+        return meetingDuration;
     }
 
     @Override

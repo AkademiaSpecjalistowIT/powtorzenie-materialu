@@ -1,12 +1,14 @@
 package pl.akademiaspecjalistowit.powtorzeniematerialu.meeting;
 
 import static org.assertj.core.api.Java6Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.function.Executable;
 
 class MeetingServiceTest {
 
@@ -78,15 +80,18 @@ class MeetingServiceTest {
         String OverlappingMeetingDuration = "01:00";
 
         // WHEN
-        Meeting overlappingMeeting = meetingService
+        Executable e = () -> meetingService
             .createNewMeeting(overlappingMeetingName,
                 overlappingMeetingDateTimeString,
                 overlappingParticipantEmails,
                 OverlappingMeetingDuration);
 
         // THEN
+
+        assertThrows(MeetingException.class, e);
         List<Meeting> allMeetings = meetingService.getAllMeetings();
-        assertThat(allMeetings).hasSize(2);
+        assertThat(allMeetings).hasSize(1);
+
     }
 
 
